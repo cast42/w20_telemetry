@@ -1,14 +1,6 @@
-## Project title
+## W20 Telemetry
 
-This boilerplate project contains the following setup ready for you to go:
-
-* package/environment management
-    * `poetry`
-* code validation
-    * `black`
-    * `ruff`
-    * `pytest`
-* pre-commit hooks
+Upload each previous day's measurement to Azure Blob Storage.
 
 # Setup
 
