@@ -1,6 +1,7 @@
 import pytest
+from freezegun import freeze_time
 
-from src.upload2azure import getLogger, zip_dir
+from src.upload2azure import getLogger, upload_data_directory, zip_dir
 
 
 @pytest.fixture(scope="session")
@@ -25,3 +26,15 @@ def test_zip_dir(template_dir):
     logger = getLogger()
     zip_dir(template_dir / "07062023", logger)
     assert (template_dir / "07062023.zip").exists()
+
+
+@freeze_time("2023-06-08")
+def test_upload_data_directory(template_dir):
+    assert template_dir.exists()
+    assert (template_dir / "07062023").exists()
+    assert (template_dir / "07062023" / "test1.txt").exists()
+    assert (template_dir / "07062023" / "test2.txt").exists()
+    logger = getLogger()
+    zip_dir(template_dir / "07062023", logger)
+    assert (template_dir / "07062023.zip").exists()
+    assert upload_data_directory(template_dir) is None

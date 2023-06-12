@@ -13,7 +13,7 @@ import schedule
 
 # from azure.core.exceptions import AzureError
 from azure.storage.blob import BlobServiceClient
-from dotenv import dotenv_values
+from dotenv import dotenv_values, find_dotenv
 from tenacity import RetryError, retry, stop_after_attempt, wait_fixed
 
 # pip install -f requirements.txt
@@ -112,9 +112,9 @@ def getLogger() -> logging.Logger:
     return logger
 
 
-def upload_data_directory() -> None:
+def upload_data_directory(directory_path: Union[str, os.PathLike]) -> None:
     """
-    Creates a zipfile from directory of current date minus 1 day.
+    Creates a zipfile in directory of current date minus 1 day.
     For example is today is is 08062023 , a zipfile 07062023.zip will be created.
     That zipfile is uploaded to Azure blob storage.
     By default, the local file or remote blob are overwritten if they already exists.
@@ -122,6 +122,15 @@ def upload_data_directory() -> None:
     After 5 times, it logs an error in the log file and quits silently.
     The zipfile remains in the local file system.
     """
+    if isinstance(directory_path, str):
+        dir_path = Path(directory_path)
+    elif isinstance(directory_path, os.PathLike):
+        dir_path = directory_path
+    else:
+        raise TypeError(
+            "directory_path argument must be a string or a path object "
+            f"but is {directory_path}."
+        )
 
     now = datetime.now()
     date_string = now.strftime("%d%m%Y")
@@ -130,8 +139,11 @@ def upload_data_directory() -> None:
     except Exception as e:
         logger.error(f"Could not initiate logger. Error: {e}")
         return
+    if not dir_path.exists():
+        logger.error(f"Directory {dir_path.as_posix()} does not exists.")
+        return
     try:
-        config = dotenv_values(".env")
+        config = dotenv_values(find_dotenv())
     except Exception as e:
         logger.error(f"Could not load environemnt .env Error:{e}")
         return
@@ -142,7 +154,7 @@ def upload_data_directory() -> None:
     except Exception as e:
         logger.error(f"Date argument {date_string} is not in %d%m%Y format. Error: {e}")
         return
-    directory_name_path = Path(directory_name)
+    directory_name_path = dir_path / Path(directory_name)
     if not directory_name_path.exists():
         logger.error(f"Directory {directory_name_path} does not exists.")
         return
@@ -161,7 +173,7 @@ def upload_data_directory() -> None:
 
 
 if __name__ == "__main__":
-    schedule.every().day.at("04:30").do(upload_data_directory)
+    schedule.every().day.at("04:30").do(upload_data_directory, directory_path="./")
 
     while True:
         schedule.run_pending()
