@@ -1,11 +1,11 @@
 [tool.poetry]
 name = "w20_telemetry"
 version = "0.1.0"
-description = "A Python project containing some minimal best-practices boilerplate"
+description = "A Python project to upload telemtry data to Azure Blob Storage"
 authors = ["Lode Nachtergaele <arthur@dent.space>"]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "python_minimal_boilerplate"}]
+packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.10.0"
