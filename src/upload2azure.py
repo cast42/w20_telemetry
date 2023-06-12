@@ -49,7 +49,7 @@ def upload_to_blob_storage(
         blob_client = blob_service_client.get_blob_client(
             container=config["CONTAINER_NAME"], blob=remote_blob_file_name
         )
-        logger.debug("Start uploading to blob.")
+        logger.debug(f"Start uploading to blob {config['CONTAINER_NAME']=}.")
         with open(local_filepath, "rb") as data:
             blob_client.upload_blob(data, overwrite=True)
         logger.debug("Uploading to blob done.")
@@ -58,7 +58,7 @@ def upload_to_blob_storage(
         raise e
     logger.debug(
         f"Local file {local_filepath} uploaded successfully"
-        " to {remote_blob_file_name} blob in {config['CONTAINER_NAME']} container."
+        f" to {remote_blob_file_name} blob in {config['CONTAINER_NAME']} container."
     )
 
 
@@ -114,8 +114,8 @@ def getLogger() -> logging.Logger:
 
 def upload_data_directory(directory_path: Union[str, os.PathLike]) -> None:
     """
-    Creates a zipfile in directory of current date minus 1 day.
-    For example is today is is 08062023 , a zipfile 07062023.zip will be created.
+    Creates a zipfile in directory directory_path of current date minus 1 day.
+    For example if today is 08-06-2023, a zipfile 07062023.zip will be created.
     That zipfile is uploaded to Azure blob storage.
     By default, the local file or remote blob are overwritten if they already exists.
     In case the upload fails, the function retries a number of times.
@@ -165,7 +165,7 @@ def upload_data_directory(directory_path: Union[str, os.PathLike]) -> None:
     try:
         logger.debug(
             f"Upload local file {zip_file_path=}"
-            "to Azure blog with name {zip_file_path.name=}."
+            f"to Azure blog with name {zip_file_path.name=}."
         )
         upload_to_blob_storage(zip_file_path, zip_file_path.name, config, logger)
     except RetryError:
