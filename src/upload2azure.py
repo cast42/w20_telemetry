@@ -52,7 +52,7 @@ def upload_to_blob_storage(
         logger.debug(f"Start uploading to blob {config['CONTAINER_NAME']=}.")
         with open(local_filepath, "rb") as data:
             blob_client.upload_blob(data, overwrite=True)
-        logger.debug("Uploading to blob done.")
+        logger.debug(f"Uploading {local_filepath} to blob done.")
     except Exception as e:
         logger.error(f"Error occurred while uploading local file {local_filepath}: {e}")
         raise e
