@@ -12,7 +12,7 @@ from typing import Union
 import schedule
 
 # from azure.core.exceptions import AzureError
-from azure.storage.blob import BlobServiceClient
+from azure.storage.blob import BlobServiceClient, ContentSettings
 from dotenv import dotenv_values, find_dotenv
 from tenacity import RetryError, retry, stop_after_attempt, wait_fixed
 
@@ -50,8 +50,11 @@ def upload_to_blob_storage(
             container=config["CONTAINER_NAME"], blob=remote_blob_file_name
         )
         logger.debug(f"Start uploading to blob {config['CONTAINER_NAME']=}.")
+        zipfile_content_setting = ContentSettings(content_type="application/zip")
         with open(local_filepath, "rb") as data:
-            blob_client.upload_blob(data, overwrite=True)
+            blob_client.upload_blob(
+                data, overwrite=True, content_settings=zipfile_content_setting
+            )
         logger.debug(f"Uploading {local_filepath} to blob done.")
     except Exception as e:
         logger.error(f"Error occurred while uploading local file {local_filepath}: {e}")
