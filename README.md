@@ -41,7 +41,7 @@ prompt>python -m ensurepip --upgrade
 3. Installeer de benodigde Python bibliotheken:
 
 ```ascii
-prompt>pip install -f requirements.txt
+prompt>pip install -r requirements.txt
 ```
 
 4. In een apart venster, start het Python script upload2azure.py in dezelfde map waar de mappen met ruwe data staan en laat het lopen:
